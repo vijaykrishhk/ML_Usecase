@@ -1,0 +1,69 @@
+import pandas as pd
+import numpy as np
+from pgmpy.models import DiscreteBayesianNetwork
+from pgmpy.estimators import MaximumLikelihoodEstimator
+from pgmpy.inference import VariableElimination
+
+# Step 1: Define the Bayesian Network structure
+model = DiscreteBayesianNetwork([
+('StudyHours', 'Pass'),
+('Attendance', 'Pass')
+])
+
+# Step 2: Create Sample Dataset (realistic dependency)
+
+np.random.seed(42)
+
+data = []
+
+for _ in range(200):
+study = np.random.choice(['Low', 'Medium', 'High'], p=[0.3, 0.4, 0.3])
+attend = np.random.choice(['Poor', 'Good'], p=[0.4, 0.6])
+
+# Define passing logic (dependency)
+if study == 'High' and attend == 'Good':
+result = 'Yes'
+elif study == 'Low' and attend == 'Poor':
+result = 'No'
+else:
+result = np.random.choice(['Yes', 'No'], p=[0.6, 0.4])
+
+data.append([study, attend, result])
+
+df = pd.DataFrame(data, columns=['StudyHours', 'Attendance', 'Pass'])
+
+print("Sample Data:")
+print(df.head())
+
+# Step 3: Train the Model
+model.fit(df, estimator=MaximumLikelihoodEstimator)
+
+# Step 4: Perform Inference
+inference = VariableElimination(model)
+
+# Step 5: Predict
+
+evidence = {
+'StudyHours': 'High',
+'Attendance': 'Good'
+}
+
+result = inference.map_query(variables=['Pass'], evidence=evidence)
+
+print("\nPrediction Result:")
+print("Will Student Pass?:", result['Pass'])
+
+output:
+Sample Data:
+Study  Hours   Attendance   Pass
+0      Medium    Good        No
+1      Medium    Poor        Yes
+2      Low       Good        No
+3      High      Poor        No
+4      High      Poor        Yes
+Finding Elimination Order: : 
+ 0/0 [00:00<?, ?it/s]
+ 0/0 [00:00<?, ?it/s]
+
+Prediction Result:
+Will Student Pass?: Yes
