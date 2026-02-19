@@ -1,0 +1,54 @@
+import numpy as np
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import GaussianNB
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+
+# Step 1: Sample Email Dataset
+emails = [
+    "Win money now",
+    "Limited time offer",
+    "Meet me at the office",
+    "Project discussion tomorrow",
+    "Claim your free prize",
+    "Let's have lunch",
+    "Exclusive deal just for you",
+    "Important meeting update"
+]
+
+labels = ['Yes', 'Yes', 'No', 'No', 'Yes', 'No', 'Yes', 'No']  # Spam = Yes
+
+# Step 2: Convert Text to Numerical Features
+vectorizer = CountVectorizer()
+X = vectorizer.fit_transform(emails).toarray()
+
+# Convert labels to numeric
+y = np.array([1 if label == 'Yes' else 0 for label in labels])
+
+# Step 3: Split Dataset
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Step 4: Train Gaussian Naïve Bayes Model
+model = GaussianNB()
+model.fit(X_train, y_train)
+
+# Step 5: Test Accuracy
+y_pred = model.predict(X_test)
+print("Model Accuracy:", accuracy_score(y_test, y_pred))
+
+# Step 6: Predict New Email
+new_email = ["Win a free lottery prize now"]
+new_email_vector = vectorizer.transform(new_email).toarray()
+
+prediction = model.predict(new_email_vector)
+
+print("\nNew Email:", new_email[0])
+print("Prediction:", "Spam" if prediction[0] == 1 else "Not Spam")
+
+OUTPUT:
+
+Model Accuracy: 0.6666666666666666
+
+New Email: Win a free lottery prize now
+Prediction: Spam
