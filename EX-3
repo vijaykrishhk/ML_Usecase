@@ -1,0 +1,55 @@
+Import math
+import numpy as np
+
+# Dataset
+X = np.array([
+    [3, 2, 1],
+    [2, 1, 1],
+    [0, 0, 0],
+    [1, 0, 0],
+    [3, 1, 2],
+    [0, 1, 0]
+])
+
+y = np.array(['Yes', 'Yes', 'No', 'No', 'Yes', 'No'])
+
+# Separate classes
+X_yes = X[y == 'Yes']
+X_no = X[y == 'No']
+
+# Calculate mean and variance
+mean_yes = X_yes.mean(axis=0)
+var_yes = X_yes.var(axis=0)
+
+mean_no = X_no.mean(axis=0)
+var_no = X_no.var(axis=0)
+
+# Prior probabilities
+prior_yes = len(X_yes) / len(X)
+prior_no = len(X_no) / len(X)
+
+# Gaussian function
+def gaussian_prob(x, mean, var):
+    exponent = math.exp(-((x - mean) ** 2) / (2 * var + 1e-6))
+    return (1 / math.sqrt(2 * math.pi * var + 1e-6)) * exponent
+
+# Prediction function
+def predict(sample):
+    prob_yes = prior_yes
+    prob_no = prior_no
+   
+    for i in range(len(sample)):
+        prob_yes *= gaussian_prob(sample[i], mean_yes[i], var_yes[i])
+        prob_no *= gaussian_prob(sample[i], mean_no[i], var_no[i])
+   
+    return "Yes" if prob_yes > prob_no else "No"
+
+# Test Email: Free=2, Win=1, Offer=1
+test_email = [2, 1, 1]
+result = predict(test_email)
+
+print("Prediction:", result)    
+
+OUTPUT:
+
+Prediction: Yes
