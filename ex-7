@@ -1,0 +1,110 @@
+import numpy as np
+
+# -----------------------------
+# Observed Data
+# -----------------------------
+heads = np.array([5, 9, 8, 4, 7])
+tails = 10 - heads
+n_trials = len(heads)
+
+# -----------------------------
+# Initial Guesses
+# -----------------------------
+theta_A = 0.6
+theta_B = 0.5
+
+iterations = 10
+
+print("Observed Heads:", heads)
+print("\nInitial Estimates:")
+print("Theta_A =", theta_A)
+print("Theta_B =", theta_B)
+
+# -----------------------------
+# EM Algorithm
+# -----------------------------
+for iteration in range(iterations):
+
+    # E-Step
+    weight_A = []
+    weight_B = []
+   
+    for h, t in zip(heads, tails):
+        prob_A = (theta_A ** h) * ((1 - theta_A) ** t)
+        prob_B = (theta_B ** h) * ((1 - theta_B) ** t)
+       
+        wA = prob_A / (prob_A + prob_B)
+        wB = prob_B / (prob_A + prob_B)
+       
+        weight_A.append(wA)
+        weight_B.append(wB)
+   
+    weight_A = np.array(weight_A)
+    weight_B = np.array(weight_B)
+
+    # M-Step
+    theta_A = np.sum(weight_A * heads) / np.sum(weight_A * 10)
+    theta_B = np.sum(weight_B * heads) / np.sum(weight_B * 10)
+
+    print(f"\nIteration {iteration+1}")
+    print("Theta_A =", round(theta_A, 4))
+    print("Theta_B =", round(theta_B, 4))
+
+# -----------------------------
+# Final Output
+# -----------------------------
+print("\nFinal Estimated Values:")
+print("Theta_A =", round(theta_A, 4))
+print("Theta_B =", round(theta_B, 4))
+
+OUTPUT:
+
+Observed Heads: [5 9 8 4 7]
+
+Initial Estimates:
+Theta_A = 0.6
+Theta_B = 0.5
+
+Iteration 1
+Theta_A = 0.713
+Theta_B = 0.5813
+
+Iteration 2
+Theta_A = 0.7453
+Theta_B = 0.5693
+
+Iteration 3
+Theta_A = 0.7681
+Theta_B = 0.5495
+
+Iteration 4
+Theta_A = 0.7832
+Theta_B = 0.5346
+
+Iteration 5
+Theta_A = 0.7911
+Theta_B = 0.5263
+
+Iteration 6
+Theta_A = 0.7945
+Theta_B = 0.5224
+
+Iteration 7
+Theta_A = 0.7959
+Theta_B = 0.5207
+
+Iteration 8
+Theta_A = 0.7965
+Theta_B = 0.52
+
+Iteration 9
+Theta_A = 0.7967
+Theta_B = 0.5198
+
+Iteration 10
+Theta_A = 0.7967
+Theta_B = 0.5197
+
+Final Estimated Values:
+Theta_A = 0.7967
+Theta_B = 0.5197
